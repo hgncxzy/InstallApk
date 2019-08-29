@@ -181,53 +181,6 @@ object ApkController {
         return isSuccess
     }
 
-    /**
-     * 将文件复制到system/app 目录
-     * @param apkPath 特别注意格式：该路径不能是：/storage/emulated/0/app/QDemoTest4.apk 需要是：/sdcard/app/QDemoTest4.apk
-     * @return
-     */
-    fun copy2SystemApp(apkPath: String, appName: String): Boolean {
-        val printWriter: PrintWriter?
-        var process: Process? = null
-        // val appName = "chetou.apk"
-        var cmd: String
-
-        try {
-            process = Runtime.getRuntime().exec("su")
-            printWriter = PrintWriter(process!!.outputStream)
-//            cmd = "mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system"
-            cmd = "mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /data"
-            Log.e("copy2SystemApp", cmd)
-            printWriter.println(cmd)
-
-            // cmd = "cat $apkPath > /system/app/$appName"
-            cmd = "cat $apkPath > /data/local/tmp/$appName"
-            Log.e("copy2SystemApp", cmd)
-            printWriter.println(cmd)
-
-//            cmd = "chmod 777 /system/app/$appName -R"
-            cmd = "chmod 777 /data/local/tmp/$appName -R"
-            Log.e("copy2SystemApp", cmd)
-            printWriter.println(cmd)
-
-//            cmd = "mount -o remount,ro -t yaffs2 /dev/block/mtdblock3 /system"
-            cmd = "mount -o remount,ro -t yaffs2 /dev/block/mtdblock3 /data"
-            Log.e("copy2SystemApp", cmd)
-            printWriter.println(cmd)
-//            printWriter.println("reboot")  //重启
-            printWriter.println("exit")
-            printWriter.flush()
-            printWriter.close()
-            val value = process.waitFor()
-            return returnResult(value)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            process?.destroy()
-        }
-        return false
-    }
-
     private fun returnResult(value: Int): Boolean {
         // 代表成功
         return when (value) {
@@ -238,6 +191,4 @@ object ApkController {
                 false
         }
     }
-
-
 }
