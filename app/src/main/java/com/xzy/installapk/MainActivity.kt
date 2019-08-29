@@ -4,9 +4,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 
+@Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,26 +17,31 @@ class MainActivity : AppCompatActivity() {
         // 权限
         Permission.isGrantExternalRW(this)
 
-        // 安装
+        // android 7.0 安装
         install.setOnClickListener {
+            val path = Environment.getExternalStorageDirectory().absolutePath
+            val appName = "test.apk"
+            val file = File("$path/$appName")
+            ApkController.install(file.absolutePath, this)
+        }
+
+        // android 9.0 安装(兼容 Android 7.0)
+        install2.setOnClickListener {
 
             val path = Environment.getExternalStorageDirectory().absolutePath
             val appName = "test.apk"
 
-            val copyResult = FileUtils.copyFile(
-                "$path/$appName",
-                "$path/Locker/$appName"
-            )
-            if (copyResult) {
-                val file = File("$path/Locker/$appName")
-                ApkController.install(file.absolutePath, this)
-            } else {
-                Log.e("", "复制失败")
-            }
-//            val appName = "test.apk"
-//            val file = File("/data/local/tmp/$appName")
-//            ApkController.install(file.absolutePath, this)
-        }
+            val srcFilePath = "$path/$appName"
+            val destFilePath = filesDir.absolutePath + "/$appName"
 
+            val copyResult = FileUtils.copyFile(srcFilePath, destFilePath)
+            if (copyResult) {
+                val result = ApkController.install(filesDir.absolutePath + "/$appName", this)
+                Toast.makeText(this, "安装结果:$result", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "文件拷贝复制失败", Toast.LENGTH_SHORT).show()
+                Log.e("", "文件拷贝复制失败")
+            }
+        }
     }
 }

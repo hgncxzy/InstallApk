@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="20dp"
     tools:context=".MainActivity"
+    android:orientation="vertical"
     tools:ignore="HardcodedText">
     <Button
         android:id="@+id/install"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="安装" />
+        android:text="Android 7.0 安装 apk" />
+
+    <Button
+        android:id="@+id/install2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Android 9.0 安装 apk(兼容 Android 7.0)" />
 </LinearLayout>

@@ -117,10 +117,9 @@ object ApkController {
                     break
                 }
             } while (true)
-
             Log.d("TAG", "install msg is $msg")
-            // 如果执行结果中包含Failure字样就认为是安装失败，否则就认为安装成功
-            if (!msg.toString().contains("Failure")) {
+            // 如果执行结果中包含 Failure 或者 denied 字样就认为是安装失败，否则就认为安装成功
+            if (!msg.toString().contains("Failure") && !msg.toString().contains("denied")) {
                 result = true
             }
         } catch (e: Exception) {
@@ -134,6 +133,7 @@ object ApkController {
             }
 
         }
+        Log.d("TAG", "install result is: $result")
         return result
     }
 
@@ -200,7 +200,7 @@ object ApkController {
             Log.e("copy2SystemApp", cmd)
             printWriter.println(cmd)
 
-           // cmd = "cat $apkPath > /system/app/$appName"
+            // cmd = "cat $apkPath > /system/app/$appName"
             cmd = "cat $apkPath > /data/local/tmp/$appName"
             Log.e("copy2SystemApp", cmd)
             printWriter.println(cmd)
