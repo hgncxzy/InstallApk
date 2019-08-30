@@ -22,7 +22,8 @@ class MainActivity : AppCompatActivity() {
             val path = Environment.getExternalStorageDirectory().absolutePath
             val appName = "test.apk"
             val file = File("$path/$appName")
-            ApkController.install(file.absolutePath, this)
+            val result = ApkController.install(file.absolutePath, this)
+            Toast.makeText(this, "安装结果:$result", Toast.LENGTH_SHORT).show()
         }
 
         // android 9.0 安装(兼容 Android 7.0)

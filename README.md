@@ -18,7 +18,7 @@
 4. 使用 PackageManager 进行安装（需要是系统级别的应用，或系统签名） 
 5. 把 apk 地址托管给 DownloadManager 下载处理（类似2）
 
-#### 标准的 Intent 安装 Apk
+#### 非静默安装 -- 标准的 Intent 安装 Apk
 
 使用 Intent 安装 Apk 没什么好说的，只需要注意一点，就是对 Android 7.0 的兼容处理。这里强调下 Android 7.0 的处理方式。在 Android 7.0 下面，使用 FileProvider 共享文件，步骤如下([参考](https://www.jianshu.com/p/a256f7a37610?tdsourcetag=s_pcqq_aiomsg))：
 
@@ -94,7 +94,7 @@
 
 
 
-#### 使用浏览器下载并安装 Apk
+#### 非静默安装 -- 使用浏览器下载并安装 Apk
 
 很简单，直接上代码.或者参看例程 [filedownload](https://github.com/hgncxzy/AndroidNetworkTransmission/tree/master/filedownload)
 
@@ -116,78 +116,11 @@
     }
 ```
 
-
-
-####  pm install（需要 su 权限） 
-
-本例程中主要是以 pm install 命令来执行静默安装的。具体请看 silentInstall 方法。（需要 Root 权限）
-
-```kotlin
- /**
-     * 静默安装
-     * @param apkPath
-     * @return
-     */
-    private fun silentInstall(apkPath: String): Boolean {
-        var result = false
-        var dataOutputStream: DataOutputStream? = null
-        var errorStream: BufferedReader? = null
-        try {
-            // 申请su权限
-            val process = Runtime.getRuntime().exec("su")
-            dataOutputStream = DataOutputStream(process.outputStream)
-            // 执行pm install命令
-            val command = "pm install -r $apkPath\n"
-            dataOutputStream.write(command.toByteArray(Charset.forName("utf-8")))
-            dataOutputStream.writeBytes("exit\n")
-            dataOutputStream.flush()
-            process.waitFor()
-            errorStream = BufferedReader(InputStreamReader(process.errorStream))
-            val msg = StringBuilder()
-            var line: String?
-            // 读取命令的执行结果
-            do {
-                line = errorStream.readLine()
-                if (line != null) {
-                    msg.append(line)
-                } else {
-                    break
-                }
-            } while (true)
-            Log.d("TAG", "install msg is $msg")
-            // 如果执行结果中包含 Failure 或者 denied 字样就认为是安装失败，否则就认为安装成功
-            if (!msg.toString().contains("Failure") && !msg.toString().contains("denied")) {
-                result = true
-            }
-        } catch (e: Exception) {
-            Log.e("TAG", e.message, e)
-        } finally {
-            try {
-                dataOutputStream?.close()
-                errorStream?.close()
-            } catch (e: IOException) {
-                Log.e("TAG", e.message, e)
-            }
-
-        }
-        Log.d("TAG", "install result is: $result")
-        return result
-    }
-```
-
-
-
-####  使用 PackageManager 进行安装（需要是系统级别的应用，或系统签名） 
-
-```kotlin
-// todo
-```
-
-
-
 #### 把 apk 地址托管给 DownloadManager 下载处理（类似使用浏览器下载并安装 Apk）
 
 这个也比较简单，直接看代码。参考例程 [filedownload](https://github.com/hgncxzy/AndroidNetworkTransmission/tree/master/filedownload)
+
+##### 1. 定义下载器工具类
 
 ```kotlin
 package com.xzy.installapk
@@ -260,7 +193,7 @@ class SystemDownloadManager {
 
 ```
 
-需要定义一个广播接收器，用于接收数据(依然兼容 Android 7.0 )
+##### 2 . 需要定义一个广播接收器，用于接收数据(依然兼容 Android 7.0 )
 
 ```kotlin
 package com.xzy.installapk
@@ -313,6 +246,71 @@ class DownloadBroadcast(private val mFile: File, private val mMimeType: String) 
 ```
 
 
+
+####  静默安装 -- pm install（需要 su 权限） ，利用 Runtime.getRuntime().exec()
+
+本例程中主要是以 pm install 命令来执行静默安装的。具体请看 silentInstall 方法。（需要 Root 权限）
+
+```kotlin
+ /**
+     * 静默安装
+     * @param apkPath
+     * @return
+     */
+    private fun silentInstall(apkPath: String): Boolean {
+        var result = false
+        var dataOutputStream: DataOutputStream? = null
+        var errorStream: BufferedReader? = null
+        try {
+            // 申请su权限
+            val process = Runtime.getRuntime().exec("su")
+            dataOutputStream = DataOutputStream(process.outputStream)
+            // 执行pm install命令
+            val command = "pm install -r $apkPath\n"
+            dataOutputStream.write(command.toByteArray(Charset.forName("utf-8")))
+            dataOutputStream.writeBytes("exit\n")
+            dataOutputStream.flush()
+            process.waitFor()
+            errorStream = BufferedReader(InputStreamReader(process.errorStream))
+            val msg = StringBuilder()
+            var line: String?
+            // 读取命令的执行结果
+            do {
+                line = errorStream.readLine()
+                if (line != null) {
+                    msg.append(line)
+                } else {
+                    break
+                }
+            } while (true)
+            Log.d("TAG", "install msg is $msg")
+            // 如果执行结果中包含 Failure 或者 denied 字样就认为是安装失败，否则就认为安装成功
+            if (!msg.toString().contains("Failure") && !msg.toString().contains("denied")) {
+                result = true
+            }
+        } catch (e: Exception) {
+            Log.e("TAG", e.message, e)
+        } finally {
+            try {
+                dataOutputStream?.close()
+                errorStream?.close()
+            } catch (e: IOException) {
+                Log.e("TAG", e.message, e)
+            }
+
+        }
+        Log.d("TAG", "install result is: $result")
+        return result
+    }
+```
+
+
+
+####  静默安装 --使用 PackageManager 进行安装（需要是系统级别的应用，或系统签名） 
+
+```kotlin
+// todo
+```
 
 
 
