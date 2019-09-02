@@ -4,6 +4,10 @@
 
 关于 Apk 普通安装和静默安装的总结。适配 Android 6.0 、Android 7.0 和 Android 9.0。
 
+### 测试环境
+
+Android 7.1 、Android 9.0 
+
 ### 应用场景
 
 对于某些定制的系统而言，是需要做到静默安装某些业务 App 的。比如有两个 App，一个是业务 App A，一个是专门负责安装服务的 App B。当 A 收到后台的升级推送时，会将新版本的安装包下载到一个指定的目录，然后给 B 发送一条广播，让 B 安装 刚刚下载好的 A 的最新版本，并强制拉起 A 应用。这个过程是完全静默的，不需要人工干预。这类场景的升级可以应用在高铁站、机场等公共场合的智能终端等场景，因为这些地方的业务升级一般都会自动完成。
@@ -312,7 +316,19 @@ class DownloadBroadcast(private val mFile: File, private val mMimeType: String) 
 // todo
 ```
 
+### 参考 
 
+1. [Android 实现静默安装的几种方式](https://blog.csdn.net/u013341672/article/details/69320412)
+2. [Android P使用pm install安装apk报错](https://blog.csdn.net/xuebijun/article/details/82852414)
+3. [Android 开发实现静默安装(需要 Root 权限)](https://www.cnblogs.com/feijian/p/5201572.html)
+4. [Android 安装应用](https://blog.csdn.net/yeshennet/article/details/78031268)
+5. 
+
+### 联系
+
+1. ID : hgncxzy
+2. 邮箱：[hgncxzy@qq.com](mailto:hgncxzy@qq.com)
+3. 项目地址：https://github.com/hgncxzy/InstallApk
 
 
 

@@ -23,8 +23,7 @@ object ApkController {
         // 先判断手机是否有root权限
         if (hasRootPermission()) {
             // 有root权限，利用静默安装实现
-            // return installSilent(apkPath)
-            return installSilent2(apkPath, context)
+            return installSilent(apkPath)
         } else {
             // 没有root权限，利用意图进行安装
             val file = File(apkPath)
@@ -141,102 +140,6 @@ object ApkController {
         Log.d("TAG", "install result is: $result")
         return result
     }
-
-
-    /**
-     * install slient 使用 ProcessBuilder
-     *
-     * @param filePath 文件路径
-     * @return boolean true -- 安装成功，false -- 安装失败
-     */
-    private fun installSilent2(filePath: String, context: Context): Boolean {
-        val file = File(filePath)
-        if (!file.exists()) {
-            return false
-        }
-        var args: Array<String> = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-            arrayOf("pm", "install", "-r", "-i", context.packageName, "--user", "0", filePath)
-        } else {
-            arrayOf("pm", "install", "-r", filePath)
-        }
-        val processBuilder = ProcessBuilder(*args)
-
-        var process: Process? = null
-        var successResult: BufferedReader? = null
-        var errorResult: BufferedReader? = null
-        val successMsg = StringBuilder()
-        val errorMsg = StringBuilder()
-        var result: Boolean
-        try {
-            process = processBuilder.start()
-            successResult = BufferedReader(InputStreamReader(process!!.inputStream))
-            errorResult = BufferedReader(InputStreamReader(process.errorStream))
-            var s: String?
-            do {
-                s = successResult.readLine()
-                if (s != null) {
-                    successMsg.append(s)
-                } else
-                    break
-            } while (true)
-
-            do {
-                s = errorResult.readLine()
-                if (s != null) {
-                    errorMsg.append(s)
-                } else
-                    break
-            } while (true)
-        } catch (e: IOException) {
-
-        } catch (e: Exception) {
-
-        } finally {
-            try {
-                successResult?.close()
-                errorResult?.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-
-            process?.destroy()
-        }
-        result = successMsg.toString().contains("Success") ||
-                successMsg.toString().contains("success")
-        Log.e("", "ErrorMsg:$errorMsg")
-        return result
-    }
-
-
-//    fun installSilentWithReflection(context: Context, filePath: String) {
-//        try {
-//            val packageManager = context.packageManager
-//            val method = packageManager.javaClass.getDeclaredMethod(
-//                "installPackage",
-//                Uri::class.java,
-//                IPackageInstallObserver::class.java,
-//                Int::class.javaPrimitiveType!!,
-//                String::class.java
-//            )
-//            method.isAccessible = true
-//            val apkFile = File(filePath)
-//            val apkUri = Uri.fromFile(apkFile)
-//
-//            method.invoke(packageManager, arrayOf(apkUri, object : IPackageInstallObserver.Stub() {
-//                @Throws(RemoteException::class)
-//                fun packageInstalled(pkgName: String, resultCode: Int) {
-//                    Log.d("", "packageInstalled = $pkgName; resultCode = $resultCode")
-//                }
-//            }, Integer.valueOf(2), "com.ali.babasecurity.yunos"))
-//            //PackageManager.INSTALL_REPLACE_EXISTING = 2;
-//        } catch (e: NoSuchMethodException) {
-//            e.printStackTrace()
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
-//
-//    }
-
 
     /**
      * 静默卸载
