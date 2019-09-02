@@ -322,7 +322,6 @@ class DownloadBroadcast(private val mFile: File, private val mMimeType: String) 
 2. [Android P使用pm install安装apk报错](https://blog.csdn.net/xuebijun/article/details/82852414)
 3. [Android 开发实现静默安装(需要 Root 权限)](https://www.cnblogs.com/feijian/p/5201572.html)
 4. [Android 安装应用](https://blog.csdn.net/yeshennet/article/details/78031268)
-5. 
 
 ### 联系
 
