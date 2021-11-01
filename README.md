@@ -313,7 +313,7 @@ class DownloadBroadcast(private val mFile: File, private val mMimeType: String) 
 ####  静默安装 --使用 PackageManager 进行安装（需要是系统级别的应用，或系统签名） 
 
 ```kotlin
-// todo
+参考这个项目 https://github.com/hgncxzy/SysInstaller
 ```
 
 ### 参考 
